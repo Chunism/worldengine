@@ -25,6 +25,7 @@ export default function Narration({
 
   useEffect(() => {
     //generate the narrative
+    if (!play) return;
     const generateNarrative = async () => {
       const description = await getGeminiVision(
         textToNarrate,
@@ -38,7 +39,7 @@ export default function Narration({
     };
 
     generateNarrative();
-  }, [textToNarrate]);
+  }, [textToNarrate, play]);
 
   const handleReadText = () => {
     if (currentLine < script.length - 1) {

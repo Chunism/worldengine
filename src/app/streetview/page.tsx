@@ -26,7 +26,7 @@ export default function App() {
     setFetching(true);
     //improve prompt
     const newPrompt =
-      "An equirectangular photograph of" +
+      "A 360  Google Street View of" +
       prompt +
       ". Canon EOS 5D Mark IV, 24mm, f/8, 1/250s, ISO 100, 2019";
     //if immersive, use blockade, otherwise just use fal
@@ -83,14 +83,15 @@ export default function App() {
           </button>
           <button
             className="p-2 w-full rounded bg-white"
-            onClick={() => {
-              var a = document.createElement("a");
-              a.href = img;
-              a.download = "Image.png";
-              a.click();
-            }}
+            onClick={() => setImmersive(!immersive)}
           >
-            Download Img
+            {immersive ? "Skybox (slow)" : "Flat (fast)"}
+          </button>
+          <button
+            className="p-2 w-full rounded bg-white"
+            onClick={() => setUpscale(!upscale)}
+          >
+            {upscale ? "Upscaling (slow)" : "Image-to-Image (fast)"}
           </button>
         </div>
         <div className="relative w-full h-full">

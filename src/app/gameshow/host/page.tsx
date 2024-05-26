@@ -6,8 +6,9 @@ import QuestionAnswer, {
   Question,
   Quiz,
 } from "@/components/QuestionAnswer";
+import { useRouter } from "next/navigation";
 
-//Add multiplayer demo using supabase realtime
+export const dynamic = "force-dynamic";
 
 export default function GameshowPage() {
   const [playerName, setPlayerName] = useState<string>("");
@@ -15,6 +16,7 @@ export default function GameshowPage() {
   const [players, setPlayers] = useState<any[]>([]);
   const [player, setPlayer] = useState<Player | null>(null);
 
+  const router = useRouter();
   const createGame = async () => {
     //Create new quiz in supabase
     const { data: quiz, error: quizError } = await supabase
@@ -59,7 +61,7 @@ export default function GameshowPage() {
       .eq("id", quiz.id)
       .select()
       .single();
-    if (data) setQuiz(data);
+    router.push("/gameshow");
   };
 
   useEffect(() => {
@@ -70,11 +72,16 @@ export default function GameshowPage() {
       .channel("players")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "player" },
+        { event: "*", schema: "public", table: "player" },
         (payload) => {
-          const player = payload.new;
-          console.log(player);
-          if (player.quiz_id === quiz.id) setPlayers([...players, payload.new]);
+          console.log(payload);
+          const player = payload.new as any;
+          if (player.quiz_id === quiz.id)
+            setPlayers((p: any[]) => {
+              const index = p.findIndex((pl) => pl.id === player.id);
+              if (index === -1) return [...p, player];
+              return p.map((pl) => (pl.id === player.id ? player : pl));
+            });
         }
       )
       .subscribe();
@@ -107,6 +114,8 @@ export default function GameshowPage() {
       .from("question")
       .insert({
         quiz_id: quiz.id,
+        theme: question.theme,
+        type: question.type,
         question: question.question,
         answers: question.answers,
         correct_answer: question.correct_answer,
@@ -149,6 +158,7 @@ export default function GameshowPage() {
               </button>
               {quiz.status === "playing" && (
                 <QuestionAnswer
+                  questionTime={10}
                   onQuestion={handleQuestion}
                   onAnswer={handleAnswer}
                 />

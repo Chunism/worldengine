@@ -5,15 +5,17 @@ import {
   OrbitControls,
   PerspectiveCamera,
 } from "@react-three/drei";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { SelectionArea } from "./SelectImageRegion";
 export default function Panorama({
   img,
   onSelect,
+  onRightClick,
   immersive = true,
 }: {
   img: string;
-  onSelect: (imgUrl: string) => void;
+  onSelect?: (imgUrl: string) => void;
+  onRightClick?: (dir: string) => void;
   immersive: boolean;
 }) {
   const [fov, setFov] = useState(100);
@@ -41,6 +43,7 @@ export default function Panorama({
     setIsSelecting(true);
     const { offsetX, offsetY } = e.nativeEvent;
     setSelection({ x: offsetX, y: offsetY, width: 0, height: 0 });
+    if (e.button === 2 && onRightClick) onRightClick("right");
   };
 
   const handleMouseMove = (e: any) => {
@@ -84,7 +87,12 @@ export default function Panorama({
           autoRotateSpeed={0.2}
         />
         <PerspectiveCamera makeDefault position={[0, 0, 0]} fov={fov} />
-        <SelectionHandler selectionArea={finalSelection} onSelect={onSelect} />
+        {onSelect && (
+          <SelectionHandler
+            selectionArea={finalSelection}
+            onSelect={onSelect}
+          />
+        )}
       </Canvas>
     </>
   );

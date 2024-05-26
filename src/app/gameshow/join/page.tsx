@@ -7,6 +7,9 @@ import QuestionAnswer, {
   Quiz,
   QuizUI,
 } from "@/components/QuestionAnswer";
+import Link from "next/link";
+
+const questionTime = 10;
 
 export default function GameshowPage() {
   const [playerName, setPlayerName] = useState<string>("");
@@ -16,7 +19,7 @@ export default function GameshowPage() {
   const [players, setPlayers] = useState<any[]>([]);
   const [question, setQuestion] = useState<Question>();
   const [answer, setAnswer] = useState<string>("");
-  const [timer, setTimer] = useState<number>(30);
+  const [timer, setTimer] = useState<number>(questionTime);
 
   const getGames = async () => {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
@@ -40,6 +43,7 @@ export default function GameshowPage() {
 
     if (timer == 0) {
       //remove interval
+      if (quiz && player && !answer) handleNoAnswer();
       clearInterval(interval);
     }
 
@@ -49,15 +53,20 @@ export default function GameshowPage() {
   useEffect(() => {
     //Get connected players and show them
     if (!quiz) return;
+    //get all current players first
     const playerChannel = supabase
       .channel("players")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "player" },
+        { event: "*", schema: "public", table: "player" },
         (payload) => {
-          const player = payload.new;
-          console.log(player);
-          if (player.quiz_id === quiz.id) setPlayers([...players, payload.new]);
+          const player = payload.new as any;
+          if (player.quiz_id === quiz.id)
+            setPlayers((p: any[]) => {
+              const index = p.findIndex((pl) => pl.id === player.id);
+              if (index === -1) return [...p, player];
+              return p.map((pl) => (pl.id === player.id ? player : pl));
+            });
         }
       )
       .subscribe();
@@ -76,7 +85,7 @@ export default function GameshowPage() {
             } else {
               setAnswer("");
               setQuestion(newQuestion as Question);
-              setTimer(30);
+              setTimer(questionTime);
             }
           }
         }
@@ -88,10 +97,19 @@ export default function GameshowPage() {
     };
   }, [quiz]);
 
-  const joinGame = (i: number) => {
+  const joinGame = async (i: number) => {
     console.log(availableGames);
     console.log(availableGames[i]);
+    await getPlayers(availableGames[i].id);
     setQuiz(availableGames[i]);
+  };
+
+  const getPlayers = async (quizId: string) => {
+    const { data, error } = await supabase
+      .from("player")
+      .select()
+      .eq("quiz_id", quizId);
+    if (data) setPlayers(data);
   };
 
   const createPlayer = async () => {
@@ -111,12 +129,16 @@ export default function GameshowPage() {
 
   const handleNoAnswer = async () => {
     if (!player) return;
-    await supabase
+    const { data, error } = await supabase
       .from("player")
       .update({
         status: "lost",
       })
-      .eq("id", player.id);
+      .eq("id", player.id)
+      .select()
+      .single();
+    console.log("no answer", data, error);
+    if (data) setPlayer(data);
   };
 
   const handleAnswer = async (i: number) => {
@@ -139,20 +161,23 @@ export default function GameshowPage() {
       .select()
       .single();
 
+    console.log("player answer saved to database", data, error);
     //update the player
-    const correct = question.answers[i] !== question.correct_answer;
-    if (question.answers[i] !== question.correct_answer) {
-      const { data, error } = await supabase
-        .from("player")
-        .update({
-          score: player.score + (correct ? question.points : 0),
-          status: correct ? "playing" : "lost",
-        })
-        .eq("id", player.id)
-        .single();
+    const correct = question.answers[i] === question.correct_answer;
 
-      if (data) setPlayer(data);
-    }
+    console.log("correct?", correct, question.points);
+
+    const { data: playerUpdate, error: playerError } = await supabase
+      .from("player")
+      .update({
+        score: player.score + (correct ? question.points : 0),
+        status: correct ? "playing" : "lost",
+      })
+      .eq("id", player.id)
+      .select()
+      .single();
+    console.log("player updated in database", playerUpdate, playerError);
+    if (playerUpdate) setPlayer(playerUpdate);
   };
 
   return (
@@ -198,12 +223,30 @@ export default function GameshowPage() {
               </button>
             </div>
           )}
-          {question && (
-            <QuizUI
-              question={question}
-              handleSelect={handleAnswer}
-              disabled={timer == 0 || player?.status === "lost"}
-            />
+          {player?.status === "playing" &&
+            (question ? (
+              <>
+                <p>
+                  Time: {timer}s{" "}
+                  {timer == 0 &&
+                    "(Waiting for host to create a new question...)"}
+                </p>
+                <QuizUI
+                  question={question}
+                  handleSelect={handleAnswer}
+                  disabled={timer == 0}
+                />
+              </>
+            ) : (
+              <p>Waiting for host to start game...</p>
+            ))}
+          {player?.status === "lost" && (
+            <Link
+              href="/gameshow"
+              className="w-full p-2 border rounded-lg hover:shadow bg-white"
+            >
+              You lost. Join Another Game?
+            </Link>
           )}
         </div>
         <div className="flex flex-col gap-4 p-4 w-full bg-white border rounded-lg">
@@ -223,7 +266,7 @@ export default function GameshowPage() {
 function PlayerList({ players }: { players: Player[] }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="text-xs font-semibold">Other Players</div>
+      <div className="text-xs font-semibold">All Players</div>
       {players.map((player, i) => (
         <div key={i} className="flex justify-between items-center">
           <p>

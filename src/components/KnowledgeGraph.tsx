@@ -180,7 +180,7 @@ export default function KnowledgeGraph({
       console.log(graphJSON);
       const newNodes = nodes.map((n) => ({
         ...n,
-        implementation: graphJSON[n.id] ?? "",
+        ...(graphJSON[n.id] ?? {}),
       }));
       setNodes(newNodes);
       onUpdate({ nodes: newNodes, edges });
