@@ -74,8 +74,7 @@ export default function AgentsPage() {
       (async () => {
         const response = await getGeminiText(`
         You are an AI assistant for the counterfactual simulation game Alternate Tides: Australia's New Dawn. 
-        You are going to tell the story in ${currentYear}
-        The story should tell 3 years later which continue from the previous:${history} and always consider your respond to the knowledge of Aborginal law and their language from the law: ${aboriginalpdf}
+        The story should continue from the previous:${history} and always consider your respond to the knowledge of Aborginal law and their language from the law: ${aboriginalpdf}
         Generate a continue story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current game state and previous game story: ${scenario} 
         The story should be around 100 words and reflect the upcoming story.
           ` 
