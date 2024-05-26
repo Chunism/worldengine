@@ -23,10 +23,10 @@ export default function Agents({
       const newAgents = await getGroqCompletion(
         //run all agents in parallel
         JSON.stringify({ world, agents }),
-        1024,
-        `You simulate autonomous agent behaviour within a given world state. The goal and other properties of the agent will be provided by the user. 
-        Generate a task for each agent to help them achieve their goal, and describe actions they perform and resources they consume to achieve it.
-        Return a new JSON object with the updated agents in the format {agents: Agent[]}.`,
+        1024,        
+        `Based on current scenario: ${world}. You simulate autonomous expert analysis within a given scenario. The criteria and other properties of the agent will be provided by the user. 
+        Generate an analysis for each agent based on the criteria, and predict the consequences that may arise when prioritizing the criteria.
+        Return a new JSON object with the updated agents in the format {agents: {name: string; analysis: string; consequences: string;}[]}.`,
         true
       );
       console.log(newAgents);
@@ -49,11 +49,11 @@ export default function Agents({
       >
         {generating ? "Generating..." : "Run Agents"}
       </button>
-      <div className="flex justify-between w-full flex-wrap">
+      <div className="flex justify-between  w-full flex-wrap">
         {agents.map((a, i) => (
           <div
             key={i}
-            className="flex flex-col rounded-lg bg-white p-2 shadow m-2 w-full"
+            className="flex flex-col rounded-lg bg-white p-2 shadow m-10 w-full"
           >
             <span>
               {generating ? "Generating..." : <KeyValueTable data={a} />}
