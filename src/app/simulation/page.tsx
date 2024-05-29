@@ -148,12 +148,13 @@ export default function AgentsPage() {
           play={playNarration}
           textToNarrate={JSON.stringify(scenario)} ///is it updated scenario???
           captionPrompt={`
-        This story suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current game state and previous game story: ${scenario} 
+        Do not include any other text or explanation or year.
+        This story suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current scenario
         Embellishes them where necessary to make them engaging to the audience. Narrate the story as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line. 
-        Each line should be in the format "Speaker: Dialogue". Do not include any other text or explanation or year.`}
-          imagePrompt={`You are an expert photographer describing images to the blind. 
-          The scene should always has those traditional Aboriginal Eora nation shelters contains the materials of coconut palm leaves, branch, limb, bark huts or woven domes etc
-          Describe the scene as if you were painting a picture with words. Start your description with: "A photograph of" then use keywords and simple phrases separated by commas.
+        Each line should be in the format "Speaker: Dialogue". `}
+          imagePrompt={`You are an expert of etchings, botanical illustrations or paintings etc.
+          The scene should always has those traditional Aboriginal Eora nation element with the first settlers coexist together.
+          Describe the scene as if you were painting a picture with words. Start your description with: "In 1780 Sydney Cove Australia, a scene of" then use keywords and simple phrases separated by commas.
           End your description with: in the style of etchings, botanical illustrations, photographs of historical artifacts or paintings etc`}
         />
 
@@ -196,32 +197,6 @@ export default function AgentsPage() {
         </div>
       </div>
     </main>
-        {/* Footer */}
-        {/* <footer className="flex justify-between items-center p-6 bg-black border-t-2 border-gray-500 fixed inset-x-0 bottom-0">
-          <div>
-            <h4 className="text-2xl font-bold text-pink-500">WORLD ENGINE STUDIO</h4>
-            <p className="text-sm text-pink-500">COPYRIGHT RMIT ARCHITECTURE</p>
-            <p className="text-sm text-pink-500">CHUN HO LAU </p>
-            <p className="text-sm text-pink-500">YUSHAN WANG </p>
-          </div>
-          <nav className="flex space-x-12 text-sm text-pink-500">
-            <div className="flex flex-col items-center space-y-2">
-              <Link href="/intro" legacyBehavior><a>INTRO</a></Link>
-              <Link href="/contact" legacyBehavior><a>CONTACT</a></Link>
-              <Link href="/projects" legacyBehavior><a>PROJECTS</a></Link>
-              <Link href="/community" legacyBehavior><a>COMMUNITY</a></Link>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <Link href="/privacy-policy" legacyBehavior><a>PRIVACY POLICY</a></Link>
-              <Link href="/terms-of-use" legacyBehavior><a>TERMS OF USE</a></Link>
-            </div>
-            <div className="flex flex-col items-center space-y-2">
-              <Link href="https://www.facebook.com" legacyBehavior><a>FACEBOOK</a></Link>
-              <Link href="https://www.instagram.com" legacyBehavior><a>INSTAGRAM</a></Link>
-              <Link href="https://www.twitter.com" legacyBehavior><a>X</a></Link>
-            </div>
-          </nav>
-        </footer> */}
   </div>
 </div>
   );

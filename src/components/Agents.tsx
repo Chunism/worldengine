@@ -47,7 +47,7 @@ export default function Agents({
         className="p-2 bg-white rounded-lg my-4 border border-black/25 w-full hover:shadow"
         onClick={() => runAgents()}
       >
-        {generating ? "Generating..." : "Run Agents"}
+        {generating ? "Generating..." : "Run Experts"}
       </button>
       <div className="flex justify-between  w-full flex-wrap">
         {agents.map((a, i) => (
