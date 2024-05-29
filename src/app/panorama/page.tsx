@@ -26,9 +26,11 @@ export default function App() {
     setFetching(true);
     //improve prompt
     const newPrompt =
-      "An equirectangular photograph of" +
-      prompt +
-      ". Canon EOS 5D Mark IV, 24mm, f/8, 1/250s, ISO 100, 2019";
+      "An etchings, botanical illustrations, photographs of historical artifacts, paintings of" +
+      prompt 
+      // +
+      // "The scene should always has those traditional Aboriginal Eora nation shelters contains the materials of coconut palm leaves, branch, limb etc."
+      ;
     //if immersive, use blockade, otherwise just use fal
     const pano = await (immersive
       ? getPanorama(newPrompt)
@@ -45,7 +47,7 @@ export default function App() {
       //Generate a description
       //Use this with image - image
       const description = await getGeminiVision(
-        `You will be provided with a screenshot from an image of ${prompt}. Vividly describe the content in the image in as much detail as possible. Your description will be used as a prompt to generate a new image, so avoid negative words like blurry, low res, unclear, etc.`,
+        `You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of ${prompt}.Describe the content in the image in as much detail as possible. Your description will be used as a prompt to generate a new image, so avoid negative words like blurry, low res, unclear, etc.`,
         imgUrl
       );
       setDescription(description);

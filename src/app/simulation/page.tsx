@@ -75,7 +75,7 @@ export default function AgentsPage() {
         const response = await getGeminiText(`
         You are an AI assistant for the counterfactual simulation game Alternate Tides: Australia's New Dawn. 
         The story should continue from the previous:${history} and always consider your respond to the knowledge of Aborginal law and their language from the law: ${aboriginalpdf}
-        Generate a continue story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current game state and previous game story: ${scenario} 
+        Generate a continue story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on the current game state and previous game story: ${scenario} 
         The story should be around 100 words and reflect the upcoming story.
           ` 
         );
@@ -151,10 +151,10 @@ export default function AgentsPage() {
         This story suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current game state and previous game story: ${scenario} 
         Embellishes them where necessary to make them engaging to the audience. Narrate the story as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line. 
         Each line should be in the format "Speaker: Dialogue". Do not include any other text or explanation or year.`}
-          imagePrompt={`You are an expert photographer describing images to the blind. You describe a scene provided by the user in vivid detail. 
-          Generate a ray tracing real style rendering of the area is vibrant with Eora Nation culture. The scene should always has those traditional Aboriginal Eora nation structures such as bark huts and woven domes.
+          imagePrompt={`You are an expert photographer describing images to the blind. 
+          The scene should always has those traditional Aboriginal Eora nation shelters contains the materials of coconut palm leaves, branch, limb, bark huts or woven domes etc
           Describe the scene as if you were painting a picture with words. Start your description with: "A photograph of" then use keywords and simple phrases separated by commas.
-          End your description with: Canon EOS 5D Mark IV, 24mm, f/8, 1/250s, ISO 100, 2019`}
+          End your description with: in the style of etchings, botanical illustrations, photographs of historical artifacts or paintings etc`}
         />
 
         <p className="absolute right-0 flex flex-col p-8 z-50 text-xl">Year: { currentYear } </p>
