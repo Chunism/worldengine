@@ -172,10 +172,7 @@ export default function AgentsPage() {
           className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
           onClick={handleProgress}
         > Progress</button>
-
-
-
-
+    
           <div
             className={`${showUI ? "flex" : "hidden"
               } scale-85 w-full bg-white text-black border p-4 rounded-lg gap-4`}
