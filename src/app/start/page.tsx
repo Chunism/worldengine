@@ -64,10 +64,10 @@ const VideoBackgroundPage: React.FC = () => {
         <header className="flex justify-between items-center p-6 bg-black border-b-2 border-gray-480">
           <h1 className="text-3xl font-bold text-green-500">World Engine Studio</h1>
           <nav className="space-x-6">
-            <Link href="/" className="hover:text-gray-400">Home</Link>
-            <Link href="/contact" className="hover:text-gray-400">Contact Us</Link>
+            <Link href="/start" className="hover:text-gray-400">Home</Link>
+            <Link href="https://www.rmit.edu.au/research/contact" className="hover:text-gray-400">Contact Us</Link>
             <Link href="/portfolio" className="hover:text-gray-400">Development Portfolio</Link>
-            <Link href="/rmit" className="hover:text-gray-400">RMIT Architecture</Link>
+            <Link href="https://www.rmit.edu.au/study-with-us/levels-of-study/postgraduate-study/masters-by-coursework/master-of-architecture-mc163?ef_id=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE:G:s&s_kwcid=AL!14937!3!652429308184!b!!g!!master%20of%20architecture!19882979499!152619350092&cq_plac=&cq_net=g&cq_pos=&cq_med=&cq_plt=gp&gad_source=1&gclid=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE&gclsrc=aw.ds" className="hover:text-gray-400">RMIT Architecture</Link>
             <Link href="/about" className="hover:text-gray-400">About</Link>
           </nav>
         </header>
@@ -95,7 +95,7 @@ const VideoBackgroundPage: React.FC = () => {
             On this stolen land, we give thanks to past aboriginal tribes, honour present aboriginal custodians, and celebrate emerging aboriginal caretakers of this earth and sky that we continue to borrow without repentance.
           </p>
           <Link href="/instruction" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
-            Explore the New World
+            START
           </Link>
         </section>
 

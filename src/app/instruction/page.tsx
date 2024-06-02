@@ -1,51 +1,60 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import YouTube, { YouTubeProps } from 'react-youtube';
 
-const VideoBackgroundPage = () => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+const VideoBackgroundPage: React.FC = () => {
+  const [player, setPlayer] = useState<YT.Player | null>(null);
 
-  const handlePlayVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = false;
-      videoRef.current.play();
-      videoRef.current.volume = 0.5; // Set volume to 50%
-      setIsPlaying(true);
+  const handlePlayVideo: YouTubeProps['onReady'] = (event) => {
+    const ytPlayer = event.target;
+    ytPlayer.mute(); // Start with mute to comply with autoplay policy
+    ytPlayer.playVideo();
+    setPlayer(ytPlayer);
+  };
+
+  const handleUserInteraction = () => {
+    if (player) {
+      player.unMute();
+      player.setVolume(50); // Set volume to 50%
     }
   };
 
   useEffect(() => {
-    const playVideoOnInteraction = () => {
-      if (!isPlaying) {
-        handlePlayVideo();
-      }
-    };
-
-    window.addEventListener('click', playVideoOnInteraction);
-    window.addEventListener('keydown', playVideoOnInteraction);
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
 
     return () => {
-      window.removeEventListener('click', playVideoOnInteraction);
-      window.removeEventListener('keydown', playVideoOnInteraction);
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
     };
-  }, [isPlaying]);
+  }, [player]);
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      {/* Local video background */}
-      <div className="absolute inset-0 z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          className="absolute inset-0 w-full h-full object-cover blur-sm"
-        >
-          <source src="/video/background-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+      {/* YouTube video background */}
+      <div className="absolute inset-0 z-0 -mt-60">
+        <div className="absolute inset-0 w-full h-full z-0 object-cover blur-sm">
+          <YouTube
+            videoId="u4Hw9d91k2E"
+            opts={{
+              width: '100%',
+              height: '100%',
+              playerVars: {
+                autoplay: 1,
+                loop: 1,
+                mute: 1,
+                controls: 0,
+                showinfo: 0,
+                modestbranding: 1,
+                playlist: 'u4Hw9d91k2E',
+              },
+            }}
+            onReady={handlePlayVideo}
+            className="absolute inset-0 w-full h-full"
+          />
+        </div>
         <div className="absolute inset-0 bg-black opacity-20"></div>
       </div>
 
@@ -55,64 +64,42 @@ const VideoBackgroundPage = () => {
         <header className="flex justify-between items-center p-6 bg-black border-b-2 border-gray-480">
           <h1 className="text-3xl font-bold text-green-500">World Engine Studio</h1>
           <nav className="space-x-6">
-            <Link href="/" legacyBehavior><a className="hover:text-gray-400">Home</a></Link>
-            <Link href="/contact" legacyBehavior><a className="hover:text-gray-400">Contact Us</a></Link>
-            <Link href="/portfolio" legacyBehavior><a className="hover:text-gray-400">Development Portfolio</a></Link>
-            <Link href="/rmit" legacyBehavior><a className="hover:text-gray-400">RMIT Architecture</a></Link>
-            <Link href="/about" legacyBehavior><a className="hover:text-gray-400">About</a></Link>
+            <Link href="/start" className="hover:text-gray-400">Home</Link>
+            <Link href="https://www.rmit.edu.au/research/contact" className="hover:text-gray-400">Contact Us</Link>
+            <Link href="/portfolio" className="hover:text-gray-400">Development Portfolio</Link>
+            <Link href="https://www.rmit.edu.au/study-with-us/levels-of-study/postgraduate-study/masters-by-coursework/master-of-architecture-mc163?ef_id=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE:G:s&s_kwcid=AL!14937!3!652429308184!b!!g!!master%20of%20architecture!19882979499!152619350092&cq_plac=&cq_net=g&cq_pos=&cq_med=&cq_plt=gp&gad_source=1&gclid=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE&gclsrc=aw.ds" className="hover:text-gray-400">RMIT Architecture</Link>
+            <Link href="/about" className="hover:text-gray-400">About</Link>
           </nav>
         </header>
 
         {/* Acknowledgment of Country */}
-        <section className="flex-grow flex flex-col items-center justify-center text-center px-6 mt-60">
-          <h2 className="text-5xl font-bold mb-8">Alternate Tides</h2>
-          <p className="mt-6 max-w-2xl text-base leading-6">
-            On this stolen land, we acknowledge our impermissible act. <br />
-            On this stolen land, we try to reconcile an ill-forgotten ‘snatch’. <br />
-            On this stolen land, we own an unforgivable ‘take’. <br />
+        <section className="flex-grow flex flex-col items-center justify-center text-justify px-6 mt-60">
+          <h2 className="text-5xl font-bold mb-8">ALTERNATE TIDES: A NEW DAWN OF AUSTRALIA</h2>
+          <p className="mt-6 max-w-6xl text-base leading-6">
+          "Alternate Tides: A New Dawn for Australia" simulator presents a counterfactual scenario where the first European settlers and Aboriginal people coexist and cohabit the land. Based on Bruce Pascoe's "Dark Emu", scenarios are developed from the consider of Aboriginal law, they are logical and reasonable.   <br />
           </p>
-          <p className="mt-6 max-w-2xl text-base leading-6">
-            Where blossoms hum and fires howl, we give thanks. <br />
-            Between mountain sand and ocean stone, we give thanks. <br />
-            Under cormorant song and mackerel sky, we give thanks. <br />
+          <p className="mt-6 max-w-6xl text-base leading-6">
+          The core significance of this simulator lies in promoting cultural awareness and respect. By intricately showcasing the traditional knowledge, social structures, and daily lives of Australia's Aboriginal people. The simulator educates users on the importance of understanding and respecting diverse cultures, highlighting the richness and wisdom within these traditions.  <br />
           </p>
-          <p className="mt-6 max-w-2xl text-base leading-6">
-            We honour the aboriginal custodians of this land, the richness of their culture, and the sacred rituals of their ceremonies. <br />
+          <p className="mt-6 max-w-6xl text-base leading-6">
+          The simulator fosters critical thinking and historical consciousness through historical reflection and detailed analytical graphs, coupled with expert analyses of each scenario. Users can deeply understand the long-term impacts of political decisions by engaging with these peaceful coexistence scenarios and drawing insights from graphical analyses and expert opinions. This education extends beyond historical contexts, applying to complex decision-making processes in contemporary society, thereby promoting rational and thoughtful decision-making. <br />
           </p>
-          <p className="mt-6 max-w-2xl text-base leading-6">
-            With honour, we celebrate aboriginal wisdom which we cannot hope to comprehend, a profound language we cannot hope to practice, a story we can never hold. <br />
+          <p className="mt-6 max-w-6xl text-base leading-6">
+          Socially, the simulator aims to enhance inclusivity and equity by reducing racial and cultural biases and prejudices, guiding society towards greater harmony. By demonstrating the possibility of peaceful coexistence, it advocates for cultural heritage preservation and decolonization, emphasizing the value of multicultural coexistence. <br />
           </p>
-          <p className="mt-6 max-w-2xl text-base leading-6">
-            On this stolen land, we give thanks to past aboriginal tribes, honour present aboriginal custodians, and celebrate emerging aboriginal caretakers of this earth and sky that we continue to borrow without repentance.
+          <p className="mt-6 max-w-6xl text-base leading-6">
+          This simulator is a powerful educational tool that can be widely utilized in schools and communities, enhancing cultural education through interactive learning. It allows students and the public to understand and respect different cultures more intuitively, fostering cross-cultural understanding and inclusivity. Globally, the simulator can have a profound impact by encouraging users to reflect on colonial history and promoting cultural protection and social equity in real life. By advocating for cultural heritage preservation and decolonization, the simulator provides an innovative and effective educational approach for the global decolonization movement, helping societies move towards a more just, inclusive, and understanding future.
           </p>
-          <Link href="/simulation" legacyBehavior>
-            <a className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
-              Explore the New World
-            </a>
+          <Link href="/simulation" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
+            Explore the New World
+          </Link>
+          <Link href="https://www.youtube.com/" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
+            Instructional Video
           </Link>
         </section>
-
-        {/* Explore More Section */}
-        <section className="flex justify-center items-center mt-24 space-x-10">
-          <div className="relative bg-cover bg-center w-72 h-48 rounded-lg" style={{ backgroundImage: 'url(/7f9bd126-ee52-4d7d-b3ef-4517cdab9be8.png)' }}>
-            <p className="absolute bottom-2 left-2 text-xs">THE GLOBAL ISSUE: LACK OF CULTURE HERITAGE</p>
-          </div>
-          <div className="relative bg-cover bg-center w-72 h-48 rounded-lg" style={{ backgroundImage: 'url(/b92aec61-19c6-4134-b9c5-b17871ec79a8.png)' }}>
-            <p className="absolute bottom-2 left-2 text-xs">MAPPING OF THE FORECASTING ENGINE</p>
-          </div>
-          <div className="relative bg-cover bg-center w-72 h-48 rounded-lg" style={{ backgroundImage: 'url(/13b012cd-8de8-43fe-b6e0-6aae78b09193.png)' }}>
-            <p className="absolute bottom-2 left-2 text-xs">SCENARIO OF THE SIMULATION TOOL</p>
-          </div>
-        </section>
-
         {/* Newsletter Section */}
         <section className="flex flex-col items-center text-center mt-24 mb-10 space-y-6">
-          <h3 className="text-lg font-bold">SIGN UP FOR THE OFFICIAL ALTERNATE TIDES NEWSLETTER!</h3>
-          <p className="max-w-lg text-sm">KEEP YOUR FEED UP TO DATE WITH THE LATEST NEWS AND ANNOUNCEMENTS ON ALL THINGS ALTERNATE TIDES!</p>
-          <div className="flex items-center border-b border-white pb-2">
-            <input type="email" placeholder="ENTER YOUR EMAIL" className="bg-black text-white text-center placeholder-gray-400 focus:outline-none" />
-            <button className="ml-2 p-2 bg-white text-black rounded-full">→</button>
-          </div>
+
         </section>
 
         {/* Footer */}
@@ -122,22 +109,25 @@ const VideoBackgroundPage = () => {
             <p className="text-sm text-pink-500">COPYRIGHT RMIT ARCHITECTURE</p>
             <p className="text-sm text-pink-500">CHUN HO LAU </p>
             <p className="text-sm text-pink-500">YUSHAN WANG </p>
+            <div className="text-sm text-pink-500">
+            Background video from <a href="https://www.youtube.com/watch?v=u4Hw9d91k2E" target="_blank" rel="noopener noreferrer" className="underline">Kinchela Boys Home AC</a>
+          </div>
           </div>
           <nav className="flex space-x-12 text-sm text-pink-500">
             <div className="flex flex-col items-center space-y-2">
-              <Link href="/intro" legacyBehavior><a>INTRO</a></Link>
-              <Link href="/contact" legacyBehavior><a>CONTACT</a></Link>
-              <Link href="/projects" legacyBehavior><a>PROJECTS</a></Link>
-              <Link href="/community" legacyBehavior><a>COMMUNITY</a></Link>
+              <Link href="/intro">INTRO</Link>
+              <Link href="/contact">CONTACT</Link>
+              <Link href="/projects">PROJECTS</Link>
+              <Link href="/community">COMMUNITY</Link>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Link href="/privacy-policy" legacyBehavior><a>PRIVACY POLICY</a></Link>
-              <Link href="/terms-of-use" legacyBehavior><a>TERMS OF USE</a></Link>
+              <Link href="/privacy-policy">PRIVACY POLICY</Link>
+              <Link href="/terms-of-use">TERMS OF USE</Link>
             </div>
             <div className="flex flex-col items-center space-y-2">
-              <Link href="https://www.facebook.com" legacyBehavior><a>FACEBOOK</a></Link>
-              <Link href="https://www.instagram.com" legacyBehavior><a>INSTAGRAM</a></Link>
-              <Link href="https://www.twitter.com" legacyBehavior><a>X</a></Link>
+              <Link href="https://www.facebook.com">FACEBOOK</Link>
+              <Link href="https://www.instagram.com">INSTAGRAM</Link>
+              <Link href="https://www.twitter.com">X</Link>
             </div>
           </nav>
         </footer>
