@@ -50,9 +50,7 @@ export default function Narration({
     }
   };
 
-  useEffect(() => {
-    console.log("current text", currentText);
-  }, [currentText]);
+
   return (
     <>
       {currentText && play && (

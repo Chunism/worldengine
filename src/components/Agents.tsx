@@ -42,14 +42,14 @@ export default function Agents({
   };
 
   return (
-    <div className="flex flex-col w-full rounded-lg border border-black/25 p-4 ">
+    <div className="flex flex-col w-full rounded-lg border border-black/25 p-4">
       <button
         className="p-2 bg-white rounded-lg my-4 border border-black/25 w-full hover:shadow"
         onClick={() => runAgents()}
       >
         {generating ? "Generating..." : "Run Experts"}
       </button>
-      <div className="flex justify-between  w-full flex-wrap">
+      <div className="flex justify-between w-full flex-wrap">
         {agents.map((a, i) => (
           <div
             key={i}

@@ -11,6 +11,7 @@ import React from "react";
 import { getGeminiText } from "@/ai/gemini";
 import { string } from "three/examples/jsm/nodes/Nodes.js";
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 const defaultGameState = {
   year: 1770,
@@ -53,6 +54,7 @@ const initAgents = [
 
 //Demo of running multiple agents that all compete for resources
 export default function AgentsPage() {
+  const router = useRouter();
   const [graph, setGraph] = useState<Graph>({ nodes: [], edges: [] });
   const [agents, setAgents] = useState<any[]>(initAgents);
   const [showUI, setShowUI] = useState<boolean>(true);
@@ -69,24 +71,43 @@ export default function AgentsPage() {
   }[]>([]);
 
   React.useEffect(() => {
-    if (currentYear > 1770) {
+    if (currentYear > 1770 && currentYear < 1800) {
 
       (async () => {
-        const response = await getGeminiText(`
-        You are an AI assistant for the counterfactual simulation game Alternate Tides: Australia's New Dawn. 
-        The story should continue from the previous:${history} and always consider your respond to the knowledge of Aborginal law and their language from the law: ${aboriginalpdf}
-        Generate a continue story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on the current game state and previous game story: ${scenario} 
-        The story should be around 100 words and reflect the upcoming story.
+        const response = await getGeminiText(``,`
+        You are an AI assistant for generating the counterfactual scenario for a simulation. 
+        The scenario you are going to generate will reflect the upcoming story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia.
+        The scenario you are going to generate is a prediction after 3 years and based on the current game state.
+        This complex scenario should continue from the previous:${history} and always consider from the aspect of Aboriginal from their knowledge from their ancestors law: ${aboriginalpdf} 
+        Only return the scenario.
           ` 
         );
         setScenario(response);
       })()
     }
+    else if(currentYear >= 1800) {
+      (async () => {
+        const response = await getGeminiText(``,
+        `
+       You are an AI assistant for generating the conclusion for the counterfactual simulation: where Aboriginal and Eora Nation people coexist in Australia in 1800. 
+       Consider from the aspect of Aboriginal from their knowledge from their ancestors law: ${aboriginalpdf} 
+        Generate a conclusion based on ${history}, this history contains the scenarios of simulations.
+       Only return the conclusion around 100 words.
+        ` 
+        );
+        console.log(response);
+        alert(response)
+      })()
+      router.push("/endgame")
+    }
+
   }, [currentYear])
 
   const handleResponse = async (newAgents: any[]) => {
     setGenerating(true);
     //now we have the new agents, we can implement our logic for how to update the graph.
+    setAgents(newAgents);
+
     try {
       const newData = await getGroqCompletion(
         JSON.stringify({ graph, scenario, agents }),
@@ -112,7 +133,6 @@ export default function AgentsPage() {
       console.error(e);
       alert("failed to update graph");
     }
-    setAgents(newAgents);
     setGenerating(false);
     setHistory([...history, { year: currentYear, analysis: newAgents, graph: graph }])
 
@@ -125,6 +145,7 @@ export default function AgentsPage() {
   const handleProgress = () => {
     setCurrentYear(currentYear + 3);
   }
+  
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -145,19 +166,21 @@ export default function AgentsPage() {
       <div className="z-10 max-w-lg w-full items-center justify-between font-mono text-sm lg:flex">
         <Narration
           play={playNarration}
-          textToNarrate={JSON.stringify(scenario)} ///is it updated scenario???
+          textToNarrate={JSON.stringify(scenario)}
           captionPrompt={`
-        Do not include any other text or explanation or year.
-        This story suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia for the strategy simulation Alternate Tides: Australia's New Dawn based on based on the current scenario
-        Embellishes them where necessary to make them engaging to the audience. Narrate the story as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line. 
-        Each line should be in the format "Speaker: Dialogue". `}
-          imagePrompt={`You are an expert of etchings, botanical illustrations or paintings etc.
-          The scene should always has those traditional Aboriginal Eora nation element with the first settlers coexist together.
-          Describe the scene as if you were painting a picture with words. Start your description with: "In 1780 Sydney Cove Australia, a scene of" then use keywords and simple phrases separated by commas.
-          End your description with: in the style of etchings, botanical illustrations, photographs of historical artifacts or paintings etc`}
+          You are provided with a world state and an array of agents performing tasks to make changes to this world state. 
+          Narrate the counterfactual story of the game: where Aboriginal Eora nation and European settelers cohabit Australia.This is not history, not real!
+          Write a short script that narrates a counterfactual story that dramatizes these events and embellishes them where necessary to make them 
+          engaging to the audience as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line.
+          Each line should be in the format "Speaker: Dialogue". `}
+          imagePrompt={`
+          You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of ${scenario}.
+          The scene should always has those traditional Aboriginal element with the first settlers coexist together.
+          Start your description with: "An etchings, botanical illustrations, photographs of historical artifacts, paintings of" then use keywords and simple phrases separated by commas.
+          End your description with: in the late 18th century when first settlers and Aboriginal coexist`}
         />
 
-        <p className="absolute right-0 flex flex-col p-8 z-50 text-xl">Year: { currentYear } </p>
+        <p className="fixed top-[80px] right-0 flex flex-col p-8 z-50 text-xl">Year: { currentYear } </p>
 
         <div id="Agent UI" className="">
           <button
@@ -170,6 +193,7 @@ export default function AgentsPage() {
           <button
           className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
           onClick={handleProgress}
+          disabled={currentYear >= 1800}
         > Progress</button>
     
           <div
@@ -185,7 +209,7 @@ export default function AgentsPage() {
             {generating && <span>Updating Graph...</span>}
             <WEKnowledgeGraph systemPrompt={scenario} graph={graph} onUpdate={getGraph} />
             <Agents
-              world={graph}
+              world={graph}///////add graph here
               initAgents={agents}
               onUpdate={handleResponse}
             />
