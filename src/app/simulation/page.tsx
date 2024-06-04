@@ -168,13 +168,14 @@ export default function AgentsPage() {
           play={playNarration}
           textToNarrate={JSON.stringify(scenario)}
           captionPrompt={`
+          Do not mention about the time and years.
           You are provided with a world state and an array of agents performing tasks to make changes to this world state. 
           Narrate the counterfactual story of the game: where Aboriginal Eora nation and European settelers cohabit Australia.This is not history, not real!
           Write a short script that narrates a counterfactual story that dramatizes these events and embellishes them where necessary to make them 
           engaging to the audience as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line.
           Each line should be in the format "Speaker: Dialogue". `}
           imagePrompt={`
-          You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of ${scenario}.
+          You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of the scene.
           The scene should always has those traditional Aboriginal element with the first settlers coexist together.
           Start your description with: "An etchings, botanical illustrations, photographs of historical artifacts, paintings of" then use keywords and simple phrases separated by commas.
           End your description with: in the late 18th century when first settlers and Aboriginal coexist`}

@@ -45,15 +45,13 @@ export default function Caption({
   }, [speed, speech]);
 
   useEffect(() => {
-    const speaker = text.split(":")[0];
-    const script = text.split(":")[1];
-
-    if (!speaker || !script) {
-      //just read the script
+    //check to see if : is in the string
+    if (!text.includes(":")) {
       setSpokenText(text);
       return;
     }
-
+    const speaker = text.split(":")[0];
+    const script = text.split(":")[1];
     setSpokenText(script);
 
     if (voices[speaker]) {
@@ -70,9 +68,12 @@ export default function Caption({
 
   return (
     <div className="absolute bottom-0 left-0 w-screen h-auto flex flex-col items-center justify-end pb-4">
-      <p className="text-sm bg-black/50 p-2 rounded-lg max-w-lg text-white font-semibold">
-        {text}
-      </p>
+      <div className="flex flex-col items-center justify-center bg-black/50 text-white max-w-lg rounded text-sm p-2 font-semibold">
+        <p className="p-2">{text}</p>
+        <button className=" bg-black/50 p-2 rounded" onClick={onComplete}>
+          Skip
+        </button>
+      </div>
       {speech && spokenText && (
         <TextToSpeech
           text={spokenText}

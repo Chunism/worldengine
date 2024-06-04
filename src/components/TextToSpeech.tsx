@@ -32,19 +32,26 @@ export default function TextToSpeech({
 
   useEffect(() => {
     const generateAudio = async () => {
-      const response = await fetch("/api/deepgram", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: text,
-          model: model,
-        }),
-      });
-      if (!response.body) return;
-      const audioUrl = await getAudioUrl(response.body);
-      setAudioURL(audioUrl);
+      try {
+        const response = await fetch("/api/deepgram", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: text,
+            model: model,
+          }),
+        });
+        const audioUrl = await getAudioUrl(response!.body!);
+        setAudioURL(audioUrl);
+      } catch (e) {
+        console.error(
+          "failed to generate deepgram audio, skipping this caption",
+          e
+        );
+        handleEnded && handleEnded();
+      }
     };
     if (text && text !== "") generateAudio();
   }, [text]);
