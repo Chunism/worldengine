@@ -1,23 +1,18 @@
 "use client";
+import React, { useState, useEffect } from "react";
 import Agents from "@/components/Agents";
-import { useState } from "react";
 import Narration from "@/components/Narration";
-import KnowledgeGraph from "@/components/KnowledgeGraph";
+import WEKnowledgeGraph from "@/components/WEKnowledgeGraph";
 import { GNode, Graph } from "@/components/Graph";
 import { getGroqCompletion } from "@/ai/groq";
-import WEKnowledgeGraph from "@/components/WEKnowledgeGraph";
-import { aboriginalpdf } from "../darkemu/data";
-import React from "react";
-import {getGeminiVision } from "@/ai/gemini";
-import { string } from "three/examples/jsm/nodes/Nodes.js";
+import { getGeminiVision } from "@/ai/gemini";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 const defaultGameState = {
-  year: 1770,
+  year: 1790,
   event: "The Eora Nation people, adorned with intricate traditional body paint and carvings, watch warily from the shore. The Europeans, dressed in their pristine naval uniforms, unload gifts including tools, food, and fabrics. They set up a temporary encampment with tents and cooking fires. The Eora people, engaging in daily activities like fishing, cooking, and crafting tools, eye the newcomers with a mix of curiosity and suspicion. Children play near the shore, while warriors stand ready, prepared for any threat. In a central area, Cook presents an array of gifts to Eora leaders, who examine them cautiously, discussing their potential uses and implications. Friendly gestures and respectful bows are exchanged, but tension is palpable. Some Europeans document the local flora and fauna, fascinated yet uncertain. The Eora people’s reaction is mixed, some intrigued by the strange tools, others wary of the Europeans’ intentions. The atmosphere is charged, the future of this encounter hanging in the balance.",
 };
-
 
 const initAgents = [
   {
@@ -52,7 +47,7 @@ const initAgents = [
   },
 ];
 
-//Demo of running multiple agents that all compete for resources
+// Demo of running multiple agents that all compete for resources
 export default function AgentsPage() {
   const router = useRouter();
   const [graph, setGraph] = useState<Graph>({ nodes: [], edges: [] });
@@ -60,63 +55,98 @@ export default function AgentsPage() {
   const [showUI, setShowUI] = useState<boolean>(true);
   const [playNarration, setPlayNarration] = useState<boolean>(false);
   const [generating, setGenerating] = useState<boolean>(false);
-  const [scenario, setScenario] = useState(`
-   ${defaultGameState.event}
-  `);
-  const [currentYear, setCurrentYear] = useState(1770);
+  const [scenario, setScenario] = useState<string>(defaultGameState.event);
+  const [currentYear, setCurrentYear] = useState<number>(defaultGameState.year);
   const [history, setHistory] = useState<{
     year: number,
     analysis: string[],
     graph: Graph,
+    scenario: string
   }[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentYear > 1770 && currentYear < 1800) {
-
-      (async () => {
-        const response = await getGeminiVision(
-          "", // prompt can be empty since systemPrompt has all details
-          undefined, // no base64 image
-          `
-            You are an AI assistant for generating the counterfactual scenario for a simulation. 
-            The scenario you are going to generate will reflect the upcoming story that suggests the counterfactual scenario: where Aboriginal Eora nation and European settlers cohabit Australia.
-            The scenario you are going to generate is a prediction after 3 years and based on the current game state.
-            This complex scenario should continue from the previous: ${history} and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law.
-            Generate the complex scenario around 150 words and only return the scenario.
-          `,
-          false // return plain text, not JSON
-        );
-        
-        console.log(response);
-        
-        setScenario(response);
-      })()
+      generateScenario();
+    } else if (currentYear >= 1800) {
+      generateConclusion();
     }
-    else if(currentYear >= 1800) {
-      (async () => {
-        const response = await getGeminiVision(
-          "", // prompt can be empty since systemPrompt has all details
-          undefined, // no base64 image
-          `
-            You are an AI assistant for generating the conclusion for the counterfactual simulation: where Aboriginal and Eora Nation people coexist in Australia in 1800. 
-            Consider from the aspect of Aboriginal from the ${history}, which contains the scenarios of simulations.
-            Generate a conclusion based on ${graph}.
-            Only return the conclusion around 100 words.
-          `,
-          false // return plain text, not JSON
-        );
-        
-        console.log(response);
-        alert(response)
-      })()
-      router.push("/endgame")
-    }
+  }, [currentYear]);
 
-  }, [currentYear])
+  const generateScenario = async () => {
+    try {
+      const previousScenario = history.length > 0 ? history[history.length - 1].scenario : defaultGameState.event;
+      const previousYear = history.length > 0 ? history[history.length - 1].year : defaultGameState.year;
+      const response = await getGeminiVision(
+        "Generate a scenario for the counterfactual scenario where the Aboriginal Eora nation and European settlers cohabit Australia based on previous scenario. Consider the previous scenario and current game state, your response should refer to Aboriginal ancestor knowledge",
+        undefined,
+        `
+          You are an AI assistant for generating the counterfactual scenario for a simulation.
+          This complex scenario should continue from the previous story and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law.
+          This scenario talks about what happened during the progress time. Think about what happened in 3 years of time.
+          This scenario is based on the previous story, it is a story that continued from the previous scenario and can be run for the upcoming scenario.
+          Generate the complex scenario around 150 words and only return the scenario.
+
+          Previous Scenario: ${previousScenario}
+          Previous Year: ${previousYear}
+          Current Year: ${currentYear}
+          
+          Instructions:
+          - Clearly describe the key events that have occurred in the 3 years since the previous scenario.
+          - Highlight any new developments, challenges, or conflicts that have emerged.
+          - Ensure the narrative builds logically from the previous events and incorporates both Eora and European perspectives.
+          - Mention specific interactions, agreements, or conflicts that illustrate the evolving relationship.
+          - Incorporate traditional Eora knowledge and practices and how they are influencing or being influenced by European settlers.
+          - Ensure the scenario is engaging and introduces new dynamics that set the stage for future scenarios.
+        `,
+        false
+      );
+
+      console.log(response);
+      setScenario(response);
+      setHistory([...history, { year: currentYear, analysis: agents.map(a => a.analysis), graph, scenario: response }]);
+    } catch (error) {
+      console.error("Error generating scenario:", error);
+      alert("Failed to generate scenario");
+    }
+  };
+
+  const generateConclusion = async () => {
+    try {
+      // Collect all scenarios from history
+      const allScenarios = history.map(entry => entry.scenario).join(" ");
+
+      const response = await getGeminiVision(
+        `The year is 1800, generate a conclusion in less than 100 words for the counterfactual simulation based on the provided history and current game state.
+         This conclusion suggests that the coexist of settlers and Aborginal have a bright future, they are going to coinhabit the land and respect each other and live together.
+         Give a conlcusion that is positive.
+        
+        
+        `,
+        undefined,
+        `
+          You are an AI assistant for generating the conclusion for the counterfactual simulation where Aboriginal and Eora Nation people coexist in Australia in 1800.
+          Based on the history of the simulation, here is the sequence of events:
+          ${allScenarios}
+          
+          The current game state is as follows:
+          ${JSON.stringify(graph)}
+          Generate a conclusion based on this history and current game state. Ensure the conclusion is around 100 words and captures the key outcomes and future implications.
+          Only return conclusion.
+        `,
+        false
+      );
+
+      console.log(response);
+      alert(response);
+      router.push("/endgame");
+    } catch (error) {
+      console.error("Error generating conclusion:", error);
+      alert("Failed to generate conclusion");
+    }
+  };
 
   const handleResponse = async (newAgents: any[]) => {
     setGenerating(true);
-    //now we have the new agents, we can implement our logic for how to update the graph.
     setAgents(newAgents);
 
     try {
@@ -124,8 +154,8 @@ export default function AgentsPage() {
         JSON.stringify({ graph, scenario, agents }),
         2048,
         `The user will provide you with an implementation of a specific concept in the form of a knowledge graph together with an array of experts working towards specific goals within this graph.
-        Generate a new state property for each node that describes how the goals, tasks and actions of an agent has impacted this node. 
-        If the node is impacted, include a brief summary of the agent name and their task in the new state. 
+        Generate a new state property for each node that describes how the goals, tasks, and actions of an agent have impacted this node.
+        If the node is impacted, include a brief summary of the agent name and their task in the new state.
         Include specific changes that may be required to the implementation of the node, or challenges the node now faces.
         Generate a map using the node ID as the key and the new state as the value.
         Return your response in JSON in the format {[id:string]: string}.`,
@@ -142,11 +172,9 @@ export default function AgentsPage() {
       setGraph({ nodes: newNodes, edges: graph.edges });
     } catch (e) {
       console.error(e);
-      alert("failed to update graph");
+      alert("Failed to update graph");
     }
     setGenerating(false);
-    setHistory([...history, { year: currentYear, analysis: newAgents, graph: graph }])
-
   };
 
   const getGraph = (graph: Graph) => {
@@ -154,9 +182,10 @@ export default function AgentsPage() {
   };
 
   const handleProgress = () => {
-    setCurrentYear(currentYear + 3);
-  }
-  
+    if (currentYear < 1800) {
+      setCurrentYear(currentYear + 3);
+    }
+  };
 
   return (
     <div className="relative min-h-screen bg-black text-white overflow-hidden">
@@ -173,63 +202,61 @@ export default function AgentsPage() {
           </nav>
         </header>
 
-    <main className="">
-      <div className="z-10 max-w-lg w-full items-center justify-between font-mono text-sm lg:flex">
-        <Narration
-          play={playNarration}
-          textToNarrate={JSON.stringify(scenario)}
-          captionPrompt={`
-          Do not mention about the time and years.
-          You are provided with a world state and an array of agents performing tasks to make changes to this world state. 
-          Narrate the counterfactual story of the game: where Aboriginal Eora nation and European settelers cohabit Australia.This is not history, not real!
-          Write a short script that narrates a counterfactual story that dramatizes these events and embellishes them where necessary to make them 
-          engaging to the audience as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line.
-          Each line should be in the format "Speaker: Dialogue". `}
-          imagePrompt={`
-          You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of the scene.
-          The scene should always has those traditional Aboriginal element with the first settlers coexist together.
-          Start your description with: "An etchings, botanical illustrations, photographs of historical artifacts, paintings of" then use keywords and simple phrases separated by commas.
-          End your description with: in the late 18th century when first settlers and Aboriginal coexist`}
-        />
-
-        <p className="fixed top-[80px] right-0 flex flex-col p-8 z-50 text-xl">Year: { currentYear } </p>
-
-        <div id="Agent UI" className="">
-          <button
-            className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
-            onClick={() => setShowUI(!showUI)}
-          >
-            {showUI ? "Hide UI" : "Show UI"}
-          </button>
-        
-          <button
-          className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
-          onClick={handleProgress}
-          disabled={currentYear >= 1800}
-        > Progress</button>
-    
-          <div
-            className={`${showUI ? "flex" : "hidden"
-              } scale-85 w-full bg-white text-black border p-4 rounded-lg gap-4`}
-          >
-            <button
-              className="p-2 rounded-lg border bg-white shadow"
-              onClick={() => setPlayNarration(!playNarration)}
-            >
-              {playNarration ? "Stop Narrating" : "Start Narrating"}
-            </button>
-            {generating && <span>Updating Graph...</span>}
-            <WEKnowledgeGraph systemPrompt={scenario} graph={graph} onUpdate={getGraph} />
-            <Agents
-              world={graph}///////add graph here
-              initAgents={agents}
-              onUpdate={handleResponse}
+        <main className="">
+          <div className="z-10 max-w-lg w-full items-center justify-between font-mono text-sm lg:flex">
+            <Narration
+              play={playNarration}
+              textToNarrate={JSON.stringify(scenario)}
+              captionPrompt={`
+              Do not mention about the time and years.
+              You are provided with a world state and an array of agents performing tasks to make changes to this world state.
+              Narrate the counterfactual story of the game: where Aboriginal Eora nation and European settlers cohabit Australia. This is not history, not real!
+              Write a short script that narrates a counterfactual story that dramatizes these events and embellishes them where necessary to make them
+              engaging to the audience as lines of dialogue by a narrator and other characters. Place each item of dialogue on a new line.
+              Each line should be in the format "Speaker: Dialogue". `}
+              imagePrompt={`
+              You will be provided an etchings, botanical illustrations, photographs of historical artifacts, paintings of the scene.
+              The scene should always have those traditional Aboriginal elements with the first settlers coexist together.
+              Start your description with: "An etching, botanical illustrations, photographs of historical artifacts, paintings of" then use keywords and simple phrases separated by commas.
+              End your description with: in the late 18th century when first settlers and Aboriginal coexist.`}
             />
+
+            <p className="fixed top-[80px] right-0 flex flex-col p-8 z-50 text-xl">Year: {currentYear} </p>
+
+            <div id="Agent UI" className="">
+              <button
+                className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
+                onClick={() => setShowUI(!showUI)}
+              >
+                {showUI ? "Hide UI" : "Show UI"}
+              </button>
+
+              <button
+                className="flex flex-col p-8 z-50 text-xl hover:text-gray-400"
+                onClick={handleProgress}
+                disabled={currentYear >= 1800}
+              > Progress</button>
+
+              <div
+                className={`${showUI ? "flex" : "hidden"} scale-85 w-full bg-white text-black border p-4 rounded-lg gap-4`}>
+                <button
+                  className="p-2 rounded-lg border bg-white shadow"
+                  onClick={() => setPlayNarration(!playNarration)}
+                >
+                  {playNarration ? "Stop Narrating" : "Start Narrating"}
+                </button>
+                {generating && <span>Updating Graph...</span>}
+                <WEKnowledgeGraph systemPrompt={scenario} graph={graph} onUpdate={getGraph} />
+                <Agents
+                  world={graph}
+                  initAgents={agents}
+                  onUpdate={handleResponse}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
-    </main>
-  </div>
-</div>
+    </div>
   );
 }
