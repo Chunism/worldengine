@@ -42,7 +42,7 @@ export async function getGeminiVision(
 }
 
 export async function getGeminiText(prompt: string, systemInstruction: string) {
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest", systemInstruction: systemInstruction });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest", systemInstruction: systemInstruction });
 
   const result = await model.generateContent([prompt]);
   console.log(result.response.text());
