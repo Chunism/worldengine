@@ -8,7 +8,7 @@ import { getGroqCompletion } from "@/ai/groq";
 import WEKnowledgeGraph from "@/components/WEKnowledgeGraph";
 import { aboriginalpdf } from "../darkemu/data";
 import React from "react";
-import { getGeminiText } from "@/ai/gemini";
+import {getGeminiVision } from "@/ai/gemini";
 import { string } from "three/examples/jsm/nodes/Nodes.js";
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
@@ -74,27 +74,38 @@ export default function AgentsPage() {
     if (currentYear > 1770 && currentYear < 1800) {
 
       (async () => {
-        const response = await getGeminiText(``,`
-        You are an AI assistant for generating the counterfactual scenario for a simulation. 
-        The scenario you are going to generate will reflect the upcoming story that suggest the counterfactual scenario: where Aboriginal Eora nation and European settelers cohabit Australia.
-        The scenario you are going to generate is a prediction after 3 years and based on the current game state.
-        This complex scenario should continue from the previous:${history} and always consider from the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors law: ${aboriginalpdf} 
-        Generate the complex scenario around 150 words and Only return the scenario.
-          ` 
+        const response = await getGeminiVision(
+          "", // prompt can be empty since systemPrompt has all details
+          undefined, // no base64 image
+          `
+            You are an AI assistant for generating the counterfactual scenario for a simulation. 
+            The scenario you are going to generate will reflect the upcoming story that suggests the counterfactual scenario: where Aboriginal Eora nation and European settlers cohabit Australia.
+            The scenario you are going to generate is a prediction after 3 years and based on the current game state.
+            This complex scenario should continue from the previous: ${history} and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law: ${aboriginalpdf}.
+            Generate the complex scenario around 150 words and only return the scenario.
+          `,
+          false // return plain text, not JSON
         );
+        
+        console.log(response);
+        
         setScenario(response);
       })()
     }
     else if(currentYear >= 1800) {
       (async () => {
-        const response = await getGeminiText(``,
-        `
-       You are an AI assistant for generating the conclusion for the counterfactual simulation: where Aboriginal and Eora Nation people coexist in Australia in 1800. 
-       Consider from the aspect of Aboriginal from their knowledge from their ancestors law: ${aboriginalpdf} 
-        Generate a conclusion based on ${history}, this history contains the scenarios of simulations.
-       Only return the conclusion around 100 words.
-        ` 
+        const response = await getGeminiVision(
+          "", // prompt can be empty since systemPrompt has all details
+          undefined, // no base64 image
+          `
+            You are an AI assistant for generating the conclusion for the counterfactual simulation: where Aboriginal and Eora Nation people coexist in Australia in 1800. 
+            Consider from the aspect of Aboriginal knowledge from their ancestors' law: ${aboriginalpdf}. 
+            Generate a conclusion based on ${history}, which contains the scenarios of simulations.
+            Only return the conclusion around 100 words.
+          `,
+          false // return plain text, not JSON
         );
+        
         console.log(response);
         alert(response)
       })()
