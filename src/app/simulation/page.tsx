@@ -82,7 +82,7 @@ export default function AgentsPage() {
         undefined,
         `
           You are an AI assistant for generating the counterfactual scenario for a simulation.
-          This complex scenario should continue from the previous story and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law: ${aboriginalpdf}.
+          This complex scenario should continue from the previous story and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law:.
           This scenario talks about what happened during the progress time. Think about what happened in 3 years of time.
           This scenario is based on the previous story, it is a story that continued from the previous scenario and can be run for the upcoming scenario.
           Generate the complex scenario around 150 words and only return the scenario.
