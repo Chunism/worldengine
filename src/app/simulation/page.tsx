@@ -81,7 +81,7 @@ export default function AgentsPage() {
             You are an AI assistant for generating the counterfactual scenario for a simulation. 
             The scenario you are going to generate will reflect the upcoming story that suggests the counterfactual scenario: where Aboriginal Eora nation and European settlers cohabit Australia.
             The scenario you are going to generate is a prediction after 3 years and based on the current game state.
-            This complex scenario should continue from the previous: ${history} and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law: ${aboriginalpdf}.
+            This complex scenario should continue from the previous: ${history} and always consider the aspect of Aboriginal and mentioned reference from their knowledge from their ancestors' law.
             Generate the complex scenario around 150 words and only return the scenario.
           `,
           false // return plain text, not JSON
@@ -99,8 +99,8 @@ export default function AgentsPage() {
           undefined, // no base64 image
           `
             You are an AI assistant for generating the conclusion for the counterfactual simulation: where Aboriginal and Eora Nation people coexist in Australia in 1800. 
-            Consider from the aspect of Aboriginal knowledge from their ancestors' law: ${aboriginalpdf}. 
-            Generate a conclusion based on ${history}, which contains the scenarios of simulations.
+            Consider from the aspect of Aboriginal from the ${history}, which contains the scenarios of simulations.
+            Generate a conclusion based on ${graph}.
             Only return the conclusion around 100 words.
           `,
           false // return plain text, not JSON
