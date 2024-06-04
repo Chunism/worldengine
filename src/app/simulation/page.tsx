@@ -167,9 +167,9 @@ export default function AgentsPage() {
           <nav className="space-x-6">
             <Link href="/start" className="hover:text-gray-400">Home</Link>
             <Link href="https://www.rmit.edu.au/research/contact" className="hover:text-gray-400">Contact Us</Link>
-            <Link href="/portfolio" className="hover:text-gray-400">Development Portfolio</Link>
+            <Link href="/https://www.notion.so/Chun-Ho-Lau-Folio-World-Engine-59ed22ceb65b4f25bff46ef5515c524e" className="hover:text-gray-400">Development Portfolio</Link>
             <Link href="https://www.rmit.edu.au/study-with-us/levels-of-study/postgraduate-study/masters-by-coursework/master-of-architecture-mc163?ef_id=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE:G:s&s_kwcid=AL!14937!3!652429308184!b!!g!!master%20of%20architecture!19882979499!152619350092&cq_plac=&cq_net=g&cq_pos=&cq_med=&cq_plt=gp&gad_source=1&gclid=CjwKCAjwjeuyBhBuEiwAJ3vuocK4O954G73ncM4ODlj12TJXiA36YTlwyZCN26fCMtqM8DfHELTLihoClgQQAvD_BwE&gclsrc=aw.ds" className="hover:text-gray-400">RMIT Architecture</Link>
-            <Link href="/about" className="hover:text-gray-400">About</Link>
+            <Link href="/https://au.linkedin.com/in/chun-ho-lau-9311142ba" className="hover:text-gray-400">About</Link>
           </nav>
         </header>
 
