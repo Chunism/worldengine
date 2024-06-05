@@ -30,7 +30,7 @@ import Link from 'next/link';
 
         {/* Acknowledgment of Country */}
         <section className="flex-grow flex flex-col items-center justify-center text-center px-6 mt-60">
-          <h2 className="text-5xl font-bold mb-8">LOADING CONCLUSION OF THE SIMULATION</h2>
+          <h2 className="text-5xl font-bold mb-8">CONCLUSION OF THE SIMULATION</h2>
           <p className="mt-6 max-w-6xl text-base leading-6"> 
           As the simulation concludes, please take a moment to reflect on the journey you have undertaken in "Alternate Tides: A New Dawn for Australia." This counterfactual scenario has allowed you to explore a world where European settlers and Aboriginal people coexist peacefully from the outset.
           </p>

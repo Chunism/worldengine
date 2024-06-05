@@ -117,11 +117,8 @@ export default function AgentsPage() {
       const allScenarios = history.map(entry => entry.scenario).join(" ");
 
       const response = await getGeminiVision(
-        `The year is 1800, generate a conclusion in less than 100 words for the counterfactual simulation based on the provided history and current game state.
-         This conclusion suggests that the coexist of settlers and Aborginal have a bright future, they are going to coinhabit the land and respect each other and live together.
-         Give a conlcusion that is positive.
-        
-        
+        `The year is 1800, generate a conclusion around 100 words for the counterfactual simulation based on the provided history and current game state based on the previous scenario.
+         This complex conclusion suggests that the coexist of settlers and Aborginal people, provide a meaningful, deep thinking conclusion.        
         `,
         undefined,
         `
