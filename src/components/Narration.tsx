@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { getGeminiVision } from "@/ai/gemini";
 import Animation from "./Animation";
 //Component that turns anything into a narrated script
+
+//TODO - add a style prop and a next / prev button incase the narration doesn't play
 export default function Narration({
   play = true,
   textToNarrate,
@@ -32,7 +34,12 @@ export default function Narration({
         undefined,
         captionPrompt
       );
-      setScript(description.split("\n"));
+      //filter empty lines
+      setScript(description.split("\n").filter((line) => line !== ""));
+      console.log(
+        "Generated Script",
+        description.split("\n").filter((line) => line !== "")
+      );
       setCurrentLine(0);
       setCurrentText(description.split("\n")[0]);
       if (onNarration) onNarration(description);
@@ -50,7 +57,9 @@ export default function Narration({
     }
   };
 
-
+  useEffect(() => {
+    console.log("current text", currentText);
+  }, [currentText]);
   return (
     <>
       {currentText && play && (
