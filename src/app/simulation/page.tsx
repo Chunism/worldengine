@@ -151,9 +151,9 @@ export default function AgentsPage() {
     setAgents(newAgents);
 
     try {
-      const newData = await getGroqCompletion(
+      const newData = await getGeminiVision(
         JSON.stringify({ graph, scenario, agents }),
-        2048,
+        undefined,
         `The user will provide you with an implementation of a specific concept in the form of a knowledge graph together with an array of experts working towards specific goals within this graph.
         Generate a new state property for each node that describes how the goals, tasks, and actions of an agent have impacted this node.
         If the node is impacted, include a brief summary of the agent name and their task in the new state.

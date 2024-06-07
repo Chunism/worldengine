@@ -10,7 +10,7 @@ import GraphCanvas, {
 import { useEffect, useState } from "react";
 import crypto from "crypto";
 import KeyValueTable from "@/components/KeyValueTable";
-
+import { unstable_noStore as noStore } from "next/cache";
 type EditNode = {
   x: number;
   y: number;
@@ -23,13 +23,14 @@ type EditNode = {
 export default function WEKnowledgeGraph({
   graph = { nodes: [], edges: [] },
   systemPrompt,
-  onUpdate,
+  onUpdate = (graph: Graph) => {},
   
 }: {
   graph?: Graph;
-  onUpdate: (graph: Graph) => void;
+  onUpdate?: (graph: Graph) => void;
   systemPrompt: string,
 }) {
+  noStore();
   const [nodes, setNodes] = useState<GNode[]>(graph.nodes);
   const [edges, setEdges] = useState<Edge[]>(graph.edges);
   const [concept, setConcept] = useState<string>(
@@ -43,6 +44,7 @@ export default function WEKnowledgeGraph({
 
   //listen for changes to the props
   useEffect(() => {
+    if (!graph || !graph.nodes || graph.nodes.length == 0) return;
     setNodes(graph.nodes);
     setEdges(graph.edges);
   }, [graph]);
@@ -156,7 +158,7 @@ export default function WEKnowledgeGraph({
       console.log(graphJSON);
       const newNodes = nodes.map((n) => ({
         ...n,
-        implementation: graphJSON[n.id] ?? "",
+        ...{ implementation: graphJSON[n.id] ?? "" },
       }));
       setNodes(newNodes);
       onUpdate({ nodes: newNodes, edges });
@@ -186,7 +188,7 @@ export default function WEKnowledgeGraph({
       console.log(graphJSON);
       const newNodes = nodes.map((n) => ({
         ...n,
-        implementation: graphJSON[n.id] ?? "",
+        ...(graphJSON[n.id] ?? {}),
       }));
       setNodes(newNodes);
       onUpdate({ nodes: newNodes, edges });
