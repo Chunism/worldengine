@@ -82,22 +82,25 @@ export default function AgentsPage() {
         undefined,
         `
           You are an AI assistant for generating the counterfactual scenario for a simulation.
-          This complex scenario should continue from the previous story and always consider the aspect of Aboriginal and you have to reference from aboriginal information about ancestor's mythical stories, aboriginal law, aboriginal language, aboriginal rule, aboriginal knowledge, aboriginal culture, details of the story, law, idea, their culture from ${aboriginalpdf}.
-          This scenario talks about what happened during the progress time. Think about what happened in 3 years of time.
+          This complex scenario should continue from the previous story.
+          This scenario talks about what happened during the progress time. 
           This scenario is based on the previous story, it is a story that continued from the previous scenario and can be run for the upcoming scenario.
           Generate the complex scenario around 150 words and only return the scenario.
-
+          
+          The world: ${JSON.stringify(graph)}
           Previous Scenario: ${previousScenario}
           Previous Year: ${previousYear}
           Current Year: ${currentYear}
+
           
           Instructions:
-          - Clearly describe the key events that have occurred in the 3 years since the previous scenario.
+          - Clearly describe the key events that have occurred since the previous scenario.
           - Highlight any new developments, challenges, or conflicts that have emerged.
           - Ensure the narrative builds logically from the previous events and incorporates both Eora and European perspectives.
           - Mention specific interactions, agreements, or conflicts that illustrate the evolving relationship.
           - Incorporate traditional Eora knowledge and practices and how they are influencing or being influenced by European settlers.
           - Ensure the scenario is engaging and introduces new dynamics that set the stage for future scenarios.
+          - Ensure the scenario mentioned and consider the aspect of Aboriginal and you have to reference from aboriginal information about ancestor's mythical stories, aboriginal law, aboriginal language, aboriginal rule, aboriginal knowledge, aboriginal culture, details of the story, law, idea, their culture from ${aboriginalpdf}
         `,
         false
       );
