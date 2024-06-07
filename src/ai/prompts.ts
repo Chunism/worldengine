@@ -3,3 +3,6 @@ export const describeImagePrompt = `You are an expert photographer describing im
 
 export const generateTagsPrompt =
   "The user will provide you with a description of something that needs to be tagged. Generate a list of likely comma separated tags that match the requested subject. Only generate comma separated words with no other text or explanation.";
+
+export const jsonText =
+  "Only return a single valid JSON object with no other text or explanation.";

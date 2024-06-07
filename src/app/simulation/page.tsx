@@ -7,6 +7,7 @@ import { GNode, Graph } from "@/components/Graph";
 import { getGroqCompletion } from "@/ai/groq";
 import { getGeminiVision } from "@/ai/gemini";
 import Link from 'next/link';
+import { jsonText } from "@/ai/prompts";
 import { useRouter } from "next/navigation";
 import { aboriginalpdf } from "../darkemu/data";
 
@@ -151,15 +152,17 @@ export default function AgentsPage() {
     setAgents(newAgents);
 
     try {
+      const requestString = `${JSON.stringify({ graph, newAgents, scenario})}`;
+      console.log(requestString);
       const newData = await getGeminiVision(
-        JSON.stringify({ graph, scenario, agents }),
+        requestString,
         undefined,
-        `The user will provide you with an implementation of a specific concept in the form of a knowledge graph together with an array of experts working towards specific goals within this graph.
-        Generate a new state property for each node that describes how the goals, tasks, and actions of an agent have impacted this node.
-        If the node is impacted, include a brief summary of the agent name and their task in the new state.
-        Include specific changes that may be required to the implementation of the node, or challenges the node now faces.
-        Generate a map using the node ID as the key and the new state as the value.
-        Return your response in JSON in the format {[id:string]: string}.`,
+        `The user will provide you with an implementation of a specific concept in the form of a knowledge graph together with an array of agents working towards specific goals within this graph.
+          Your task is to update the knowledge graph to reflect the changes made by the agents.
+          Generate an array of new Nodes and an array of new Edges to represent any concepts not already modelled by the knowledge graph.
+          Update any existing nodes affected by the agents using a state map. Generate a new state object for each affected node using the node ID as the key and the new state as the value.
+          Return your response in JSON in the format {newNodes:Node[], newEdges:Edge[], newStates:{[id:string]: string}}.` +
+          jsonText,
         true
       );
       const graphJSON = JSON.parse(newData);
