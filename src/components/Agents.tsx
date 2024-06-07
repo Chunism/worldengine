@@ -53,7 +53,7 @@ export default function Agents({
         {agents.map((a, i) => (
           <div
             key={i}
-            className="flex flex-col rounded-lg bg-white p-2 shadow m-10 w-full"
+            className="flex flex-col rounded-lg bg-white p-2 shadow m-2 w-full"
           >
             <span>
               {generating ? "Generating..." : <KeyValueTable data={a} />}

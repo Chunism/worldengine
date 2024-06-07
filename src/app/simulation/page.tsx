@@ -236,8 +236,8 @@ export default function AgentsPage() {
               > Progress</button>
 
               <div
-                className={`${showUI ? "flex" : "hidden"} scale-85 w-full bg-white text-black border p-4 rounded-lg gap-4`}>
-                <button
+                className={`${showUI ? "flex" : "hidden"} scale-85 flex-col w-full bg-white text-black border p-4 rounded-lg gap-4`}>
+                <button                                          
                   className="p-2 rounded-lg border bg-white shadow"
                   onClick={() => setPlayNarration(!playNarration)}
                 >
