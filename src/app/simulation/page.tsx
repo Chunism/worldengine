@@ -152,7 +152,7 @@ export default function AgentsPage() {
     setAgents(newAgents);
 
     try {
-      const requestString = `${JSON.stringify({ graph, newAgents, scenario})}`;
+      const requestString = `${JSON.stringify({ graph, newAgents})}`;
       console.log(requestString);
       const newData = await getGeminiVision(
         requestString,
