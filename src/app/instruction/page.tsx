@@ -93,8 +93,8 @@ const VideoBackgroundPage: React.FC = () => {
           <Link href="/simulation" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
             Explore the New World
           </Link>
-          <Link href="https://www.youtube.com/" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
-            Instructional Video
+          <Link href="/logic" className="mt-20 text-2xl font-bold text-red-600 hover:text-yellow-300">
+            Instruction
           </Link>
         </section>
         {/* Newsletter Section */}
